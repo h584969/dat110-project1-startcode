@@ -7,13 +7,14 @@ public class Message {
 	private byte[] data;
 
 	public Message(byte[] data) {
+		if (data == null) {
+			throw new NullPointerException("Data can't be null");
+		}
+		if (data.length > 127) {
+			throw new IllegalArgumentException("To many bytes, expected array up to 127 bytes, recieved " + data.length + " bytes!");
+		}
 		
-		// TODO - START
-		
-		if (true)
-			throw new UnsupportedOperationException(TODO.constructor("Message"));
-			
-		// TODO - END
+		this.data = data;
 	}
 
 	public byte[] getData() {

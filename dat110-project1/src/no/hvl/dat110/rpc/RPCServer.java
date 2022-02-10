@@ -40,17 +40,25 @@ public class RPCServer {
 		   byte rpcid = 0;
 		   Message requestmsg,replymsg;
 		   
-		   // TODO - START
-		   // - receive Message containing RPC request
-		   // - find the identifier for the RPC method to invoke
-		   // - lookup the method to be invoked
-		   // - invoke the method
-		   // - send back message containing RPC reply
-			
-		   if (true)
-				throw new UnsupportedOperationException(TODO.method());
 		   
-		   // TODO - END
+		   requestmsg = connection.receive();
+		   
+		   rpcid = requestmsg.getData()[0];
+		   byte[] payload = RPCUtils.decapsulate(requestmsg.getData());
+		  
+		   
+		   RPCRemoteImpl method = services.get(rpcid);
+		   
+		   if (method != null) {
+			   byte[] result = method.invoke(payload);
+			   replymsg = new Message(RPCUtils.encapsulate(rpcid, result));
+			   connection.send(replymsg);
+		   }
+		   else {
+			   byte[] result = RPCUtils.marshallString("invalid id");
+			   replymsg = new Message(RPCUtils.encapsulate(rpcid, result));
+			   connection.send(replymsg);
+		   }
 		   
 		   if (rpcid == RPCCommon.RPIDSTOP) {
 			   stop = true;
